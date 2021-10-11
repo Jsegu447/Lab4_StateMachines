@@ -11,7 +11,7 @@
 #ifdef _SIMULATE_
 #include "simAVRHeader.h"
 #endif
-enum SM2_STATES{SM2_START,SM2_INCREASE,SM2_DECREASE, SM2_WAIT,SM2_RESET} State;
+enum SM2_STATES{SM2_START,SM2_INCREASE,SM2_DECREASE, SM2_WAIT,SM2_RESET, SM2_INCPRESS, SM2_DECPRESS} State;
 
 
 int main(void) {
@@ -46,14 +46,14 @@ int main(void) {
                 State = SM2_RESET;
         }
         else if((PINA & 0x01) == 0x01){
-                State = SM2_INCREASE;
+                State = SM2_INCPRESS;
         }
         else if((PINA & 0x02) == 0x02){
                 State = SM2_DECREASE;
         }
-        else{
-        State = SM2_WAIT;
-        }
+	else if((PINA & 0x03)==0x00){
+	  State = SM2_WAIT;
+	}
 	break;
 	
 	case SM2_DECREASE:
@@ -63,31 +63,67 @@ int main(void) {
         else if((PINA & 0x01) == 0x01){
                 State = SM2_INCREASE;
         }
-        else if((PINA & 0x02) == 0x02){
-                State = SM2_DECREASE;
+        else if((PINA & 0x20) == 0x20){
+                State = SM2_DECPRESS;
         }
-        else{
-        State = SM2_WAIT;
-        }
+	else if ((PINA & 0x03)==0x00){
+	  State = SM2_WAIT;
+	}
 	break;
 	
 	case SM2_RESET:
-	 if((PINA & 0x01) == 0x01 && (PINA & 0x02) == 0x02){
-                State = SM2_RESET;
-        }
+	
+	if((PINA & 0x01) == 0x01 && (PINA & 0x02) == 0x02){
+	State = SM2_RESET;
+	}
         else if((PINA & 0x01) == 0x01){
                 State = SM2_INCREASE;
         }
         else if((PINA & 0x02) == 0x02){
                 State = SM2_DECREASE;
         }
+	else if ((PINA & 0x03)==0x00){
+	  State = SM2_WAIT;
+	}
+	break;
+	
+	case SM2_INCPRESS:
+	 if((PINA & 0x01) == 0x01 && (PINA & 0x02) == 0x02){
+        State = SM2_RESET;
+        }
+
+	else if((PINA & 0x01) == 0x01){
+		State = SM2_INCPRESS;
+	}
+	
+	 else if((PINA & 0x02) == 0x02){
+                State = SM2_DECREASE;
+        }
+	else{
+	State = SM2_WAIT;
+	}
+	break;
+
+	 case SM2_DECPRESS:
+         if((PINA & 0x01) == 0x01 && (PINA & 0x02) == 0x02){
+        State = SM2_RESET;
+        }
+
+        else if((PINA & 0x01) == 0x01){
+                State = SM2_INCREASE;
+        }
+
+         else if((PINA & 0x02) == 0x02){
+                State = SM2_DECPRESS;
+        }
         else{
         State = SM2_WAIT;
         }
 	break;
 	
+	
 	default:
-	State = SM2_START;
+	State = SM2_WAIT;
 	}
 
 	switch(State){
@@ -105,13 +141,19 @@ int main(void) {
 	break;
 
 	case SM2_DECREASE:
+	if(PINC > 0){
 	PORTC = PINC - 1;
+	}
 	break;
 	
 	case SM2_RESET:
 	PORTC = 0x00;
 	break;
-	}		     
+       	
+	case SM2_DECPRESS:
+	case SM2_INCPRESS:
+	break;	
+	}
     }
     return 1;
 }
