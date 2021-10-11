@@ -11,16 +11,69 @@
 #ifdef _SIMULATE_
 #include "simAVRHeader.h"
 #endif
-enum STATES{ } State;
+enum STATES{START,WAITP,WAITR,WAITY,UNLOCK} State;
 
 
 int main(void) {
     /* Insert DDR and PORT initializations */
 	DDRA = 0x00; PORTA = 0x00;
-	DDRC = 0xFF; PORTC = 0x07;
+	DDRB = 0xFF; PORTB = 0x00;
     /* Insert your solution below */
-	State = SM2_START;
-    while (1){  
+	State = START;
+    while (1){
+	switch(State){
+		case START:
+		State = WAITP;
+		PORTB = 0x00;
+		break;
+		
+		case WAITP:
+		if((PINA & 0x07) == 0x04){
+			State = WAITR;		
+	  	}
+		else{
+		State = START;
+		}
+		break;
+
+		case WAITR:
+		if((PINA & 0x07) == 0x04){
+			State = WAITR;
+		}
+		else if((PINA & 0x07) = 0x02){
+		State = UNLOCK;
+		}
+		else if((PINA & 0x07) == 0x00){
+			State = WAITY;
+		}
+		
+		else{
+		State = START;	
+		}
+		break;
+
+		case WAITY:
+		if((PINA & 0x07) == 0x02){
+		State = UNLOCK;
+		}
+		else if((PINA & 0x07) == 0x00){
+		State = WAITY;
+		}
+		else{
+		State = START;
+		}
+		break;
+
+		case UNLOCK:
+		PORTB = 0x01;
+		if((PINA & 0x80) == 0x80){
+		 State = START;
+		}
+		else{
+		State = UNLOCK;
+		}
+		break;		
+	}	
     }
     return 1;
 }
