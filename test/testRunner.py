@@ -276,6 +276,6 @@ if 'pinMapping' in globals():
 if 'watch' in globals():
     for watchVariable in watch:
         avr.addWatch(watchVariable)
-runTests(tests)
+runTests(tests.py)
 displayChip(avr)
 #avr.bp.commands = 'displayChip\n' #Uncomment if you'd like to see the chip displayed at every break

@@ -22,19 +22,18 @@ int main(void) {
 	State = SM2_START;
     while (1){  
 	switch(State){
-	case: SM2_START:
-	PORTC = 0x07;
+	case SM2_START:
 	State = SM2_WAIT;
 	break;
 	
-	case: SM2_WAIT;
-	if((PINA & 0x01) == 0x01 && (PINA & 0x02) = 0x02){
+	case SM2_WAIT:
+	if((PINA & 0x01) == 0x01 && (PINA & 0x02) == 0x02){
 		State = SM2_RESET;
 	}  
 	else if((PINA & 0x01) == 0x01){
 		State = SM2_INCREASE;
 	}
-	else if((PINA & 0x02) = 0x02){
+	else if((PINA & 0x02) == 0x02){
 		State = SM2_DECREASE;
 	}
 	else{
@@ -43,13 +42,13 @@ int main(void) {
 	break;
 	
 	case SM2_INCREASE:
-	 if((PINA & 0x01) == 0x01 && (PINA & 0x02) = 0x02){
+	 if((PINA & 0x01) == 0x01 && (PINA & 0x02) == 0x02){
                 State = SM2_RESET;
         }
         else if((PINA & 0x01) == 0x01){
                 State = SM2_INCREASE;
         }
-        else if((PINA & 0x02) = 0x02){
+        else if((PINA & 0x02) == 0x02){
                 State = SM2_DECREASE;
         }
         else{
@@ -58,13 +57,13 @@ int main(void) {
 	break;
 	
 	case SM2_DECREASE:
-	 if((PINA & 0x01) == 0x01 && (PINA & 0x02) = 0x02){
+	 if((PINA & 0x01) == 0x01 && (PINA & 0x02) == 0x02){
                 State = SM2_RESET;
         }
         else if((PINA & 0x01) == 0x01){
                 State = SM2_INCREASE;
         }
-        else if((PINA & 0x02) = 0x02){
+        else if((PINA & 0x02) == 0x02){
                 State = SM2_DECREASE;
         }
         else{
@@ -73,13 +72,13 @@ int main(void) {
 	break;
 	
 	case SM2_RESET:
-	 if((PINA & 0x01) == 0x01 && (PINA & 0x02) = 0x02){
+	 if((PINA & 0x01) == 0x01 && (PINA & 0x02) == 0x02){
                 State = SM2_RESET;
         }
         else if((PINA & 0x01) == 0x01){
                 State = SM2_INCREASE;
         }
-        else if((PINA & 0x02) = 0x02){
+        else if((PINA & 0x02) == 0x02){
                 State = SM2_DECREASE;
         }
         else{
@@ -92,7 +91,26 @@ int main(void) {
 	}
 
 	switch(State){
+	case SM2_START:
+	PORTC = 0x07;
+	break;
 	
+	case SM2_WAIT:
+	break;
+	
+	case SM2_INCREASE:
+	if(PINC < 9){
+	PORTC = PINC+ 1;
+	}		
+	break;
+
+	case SM2_DECREASE:
+	PORTC = PINC - 1;
+	break;
+	
+	case SM2_RESET:
+	PORTC = 0x00;
+	break;
 	}		     
     }
     return 1;
