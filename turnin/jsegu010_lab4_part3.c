@@ -11,7 +11,7 @@
 #ifdef _SIMULATE_
 #include "simAVRHeader.h"
 #endif
-enum STATES{START,WAITP,WAITR,WAITY,UNLOCK} State;
+enum STATES{START,WAITP,WAITR,WAITY,WAITRY,UNLOCK} State;
 
 
 int main(void) {
@@ -40,9 +40,6 @@ int main(void) {
 		if((PINA & 0x07) == 0x04){
 			State = WAITR;
 		}
-		else if((PINA & 0x07) = 0x02){
-		State = UNLOCK;
-		}
 		else if((PINA & 0x07) == 0x00){
 			State = WAITY;
 		}
@@ -54,7 +51,7 @@ int main(void) {
 
 		case WAITY:
 		if((PINA & 0x07) == 0x02){
-		State = UNLOCK;
+		State = WAITRY;
 		}
 		else if((PINA & 0x07) == 0x00){
 		State = WAITY;
@@ -63,7 +60,11 @@ int main(void) {
 		State = START;
 		}
 		break;
-
+		
+		case WAITRY:
+		State = UNLOCK;
+		break;
+		
 		case UNLOCK:
 		PORTB = 0x01;
 		if((PINA & 0x80) == 0x80){
